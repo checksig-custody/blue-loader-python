@@ -320,13 +320,15 @@ class HexLoader:
 		bootadr |= 1
 		data = b'\x09' + struct.pack('>I', bootadr)
 		if (signature != None):
-			data += struct.pack('>B', len(signature)) + signature
+			for sig in signature:
+				data += struct.pack('>B', len(sig)) + sig
 		self.exchange(self.cla, 0x00, 0x00, 0x00, data)
 
 	def commit(self, signature=None):
 		data = b'\x09'
 		if (signature != None):
-			data += struct.pack('>B', len(signature)) + signature
+			for sig in signature:
+				data += struct.pack('>B', len(sig)) + sig
 		self.exchange(self.cla, 0x00, 0x00, 0x00, data)
 
 	def createAppNoInstallParams(self, appflags, applength, appname, icon=None, path=None, iconOffset=None, iconSize=None, appversion=None):

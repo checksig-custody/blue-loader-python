@@ -40,7 +40,7 @@ def get_argparser():
 repeated""", action='append')
 	parser.add_argument("--path_slip21", help="""A SLIP 21 path to which derivation is locked""", action='append')
 	parser.add_argument("--appName", help="The name to give the application after loading it")
-	parser.add_argument("--signature", help="A signature of the application (hex encoded)")
+	parser.add_argument("--signature", help="A signature of the application (hex encoded)", action='append')
 	parser.add_argument("--signApp", help="Sign application with provided signPrivateKey", action='store_true')
 	parser.add_argument("--appFlags", help="The application flags", type=auto_int)
 	parser.add_argument("--bootAddr", help="The application's boot address", type=auto_int)
@@ -176,7 +176,9 @@ if __name__ == '__main__':
 	
 	signature = None
 	if not args.signature is None:
-		signature = bytearray.fromhex(args.signature)
+		signature = []
+		for sig in args.signature:
+			signature.append(bytearray.fromhex(sig))
 	
 	#prepend app's data with the icon content (could also add other various install parameters)
 	printer = IntelHexPrinter(parser)
@@ -304,6 +306,7 @@ if __name__ == '__main__':
 		masterPrivate = PrivateKey(bytes(bytearray.fromhex(args.signPrivateKey)))
 		signature = masterPrivate.ecdsa_serialize(masterPrivate.ecdsa_sign(bytes(binascii.unhexlify(hash)), raw=True))
 		print("Application signature: " + str(binascii.hexlify(signature)))
+		signature = [ signature ]
 
 	if (args.tlv):
 		loader.commit(signature)
