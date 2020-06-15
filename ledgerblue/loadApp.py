@@ -42,7 +42,7 @@ repeated""", action='append')
 	parser.add_argument("--appName", help="The name to give the application after loading it")
 	parser.add_argument("--signature", help="A signature of the application (hex encoded)", action='append')
 	parser.add_argument("--signApp", help="Sign application with provided signPrivateKey", action='store_true')
-	parser.add_argument("--signApp2", help="Sign application with provided signPrivateKey", action='store_true')
+	parser.add_argument("--signApp2", help="Sign application with provided signPrivateKey")
 	parser.add_argument("--appFlags", help="The application flags", type=auto_int)
 	parser.add_argument("--bootAddr", help="The application's boot address", type=auto_int)
 	parser.add_argument("--rootPrivateKey", help="""The Signer private key used to establish a Secure Channel (otherwise
@@ -312,6 +312,7 @@ if __name__ == '__main__':
 	if (signature == None and args.signApp2):
 		apduMessage = "E003"
 		apdu = bytearray.fromhex(apduMessage)
+		apdu.extend(parse_bip32_path(args.signApp2, args.apilevel))
 		apdu.extend(binascii.unhexlify(hash))
 		dongle = getDongle(True)
 		signature = dongle.exchange(apdu)
